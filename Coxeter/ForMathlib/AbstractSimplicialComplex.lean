@@ -8,9 +8,11 @@ An abstract simplicial complex is a pair (V,F) where V is a set and F is a set o
   (2) if s ∈ F and t ⊆ s, then t ∈ F.
 -/
 structure AbstractSimplicialComplex (V : Type*)  where
-  faces : Set (Finset V) -- the set of faces
+  faces : Set (Finset V)
+  /- the set of faces which are Finsets of type V. -/
   empty_mem : ∅ ∈ faces
-  lower' : IsLowerSet faces -- The set of faces is a lower set under the inclusion relation.
+  lower' : IsLowerSet faces
+  /-The set of faces is a lower set under the inclusion relation.-/
 
 open Classical
 
@@ -21,6 +23,7 @@ variable {V : Type*}
 lemma subset_mem (F : AbstractSimplicialComplex V) : ∀ {s t}, s ∈ F.faces →  t ⊆ s → t ∈ F.faces
   := fun hs hst => F.lower' hst hs
 
+/- equip F∈ AbstractSimplicialComplex V with a structure of Finset using the function F↦ F.faces-/
 instance : SetLike (AbstractSimplicialComplex V) (Finset V) where
   coe F := F.faces
   coe_injective' p q h := by
@@ -38,7 +41,7 @@ theorem mem_faces {F : AbstractSimplicialComplex V} {x : Finset V} : x ∈ F.fac
 def le (G F : AbstractSimplicialComplex V) := G.faces ⊆ F.faces
 
 /-
-The set of all ASC over V admits a partial ordering by inclusion of the set of faces. We denote this relation by G ≤ F.
+The set of all ASCs over V admits a partial ordering by inclusion of the set of faces. We denote this relation by G ≤ F.
 -/
 instance partialOrder : PartialOrder (AbstractSimplicialComplex V) where
   le := le
@@ -49,6 +52,7 @@ instance partialOrder : PartialOrder (AbstractSimplicialComplex V) where
     intro h1 h2
     have h3 : G.faces = F.faces := Set.Subset.antisymm h1 h2
     exact SetLike.ext' h3
+/- Use the injectivity of the map F↦ F.faces-/
 
 @[simp]
 lemma le_def {G F : AbstractSimplicialComplex V} : G ≤ F ↔ G.faces ⊆ F.faces := by rfl
@@ -67,6 +71,7 @@ def simplex (s : Set V) : AbstractSimplicialComplex V where
 @[simp]
 lemma simplex_face {s : Set V} {a : Finset V} : a ∈ (simplex s).faces ↔ a.toSet ⊆ s := by rfl
 
+/- The intersection of ASC's is still a ASC. -/
 instance inf_set : InfSet (AbstractSimplicialComplex V) where
   sInf := fun s => ⟨⋂ F ∈ s, F.faces,
     Set.mem_biInter (fun F _ => F.empty_mem) ,
@@ -74,7 +79,7 @@ instance inf_set : InfSet (AbstractSimplicialComplex V) where
 
 @[simp]
 lemma sInf_def (s : Set (AbstractSimplicialComplex V)) : (sInf s).faces = ⋂ F ∈ s, F.faces := by rfl
-
+/- sInf is the Greatest lower bound of s. -/
 lemma sInf_isGLB (s : Set (AbstractSimplicialComplex V)) : IsGLB s (sInf s) := by
   constructor
   . intro F hF
@@ -98,9 +103,12 @@ where
   inf_le_left := fun _ _ _ ha => ha.1
   __ := completeLatticeOfInf (AbstractSimplicialComplex V) sInf_isGLB
 
+-- example two_sup (s_1 s_2: AbstractSimplicialComplex V) s_1
+
 
 @[simp]
-lemma sSup_faces (s : Set (AbstractSimplicialComplex V)) : (sSup s).faces = ⋃ F ∈ s, F.faces := by sorry
+lemma sSup_faces (s : Set (AbstractSimplicialComplex V)) : (sSup s).faces = ⋃ F ∈ s, F.faces := by
+sorry
 
 /-
 Definition: For any ASC F, we denote by vertices F the set of vertices of F.
@@ -156,7 +164,7 @@ abbrev closure (s : Set (Finset V))
   : AbstractSimplicialComplex V := sInf { K | s ⊆  K.faces}
 
 /-
-Lemma: For a finset f, the closure of {f} is the simplex of f.
+Lemma: For a finset f, the closure of {f} is the simplex associated to the finset f.
 -/
 lemma closure_simplex (f : Finset V) : closure {f} =  simplex f := by sorry
 
@@ -179,10 +187,14 @@ lemma closure_mono {s t: Set (Finset V)} : s ⊆ t → closure s ≤ closure t :
   apply sInf_le_sInf
   rw [Set.setOf_subset_setOf]
   intro _ h; exact Set.Subset.trans hst h
+/-Closure presevers order.-/
 
 
+lemma closure_le {F : AbstractSimplicialComplex V} (h: s ⊆ F.faces) : closure s ≤ F := by
+ apply closure_mono at h
+ rwa[← closure_self (F:=F)]
 
-lemma closure_le {F : AbstractSimplicialComplex V} (h: s ⊆ F.faces) : closure s ≤ F := by sorry
+
 
 /-
 Definition: G is a cone over F with cone point x if

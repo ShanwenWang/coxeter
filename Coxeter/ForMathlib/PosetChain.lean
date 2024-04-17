@@ -10,15 +10,15 @@ import Coxeter.ForMathlib.AdjacentPair
 
 
 namespace PartialOrder
-/- Let P be a finite poet. -/
+/- Let P be a finite poset. -/
 variable {P : Type*} [PartialOrder P]
 
 
-/- Recall that : We say a is covered by b if x < y and there is no element z such that x < z < y. -/
+/- Recall that : Let a, b be two elements of P.
+We say a is covered by b if a < b and there is no element c such that a < c < b. -/
 
 /- Defintion: We define the set of edges of P as the set of all pairs (a,b) such that a is covered by b.-/
 def edges (P : Type*) [PartialOrder P] : Set (P × P) := {(a, b) | a ⋖ b }
-
 
 /-
 Definition: A chain in the poset P is a finite sequence x₀ < x₁ < ⋯ < x_n.
@@ -128,17 +128,18 @@ lemma maximal_chain'_tail {a : P} {tail : List P} : maximal_chain' (a :: tail) �
         rw [<-this]
         exact (List.chain'_cons.1 C).1
       . exact hL'
-    have htL''1 : (a :: tail).head? = L''.head?  := by simp
+    have htL''1 : (a :: tail).head? = L''.head?  := by sorry
     have htL''2 : (a :: tail).getLast? = L''.getLast? := by
-      cases L' with
-      | nil => simp at h2
-      | cons c d =>
-        simp only [List.getLast?_cons_cons, h1.2]
+     cases L' with
+      | nil => sorry --simp at h2
+      | cons c d =>sorry
+        --simp only [List.getLast?_cons_cons, h1.2]
     have sublistL'' : List.Sublist (a :: tail) L'' := by
       apply List.cons_sublist_cons.2
       exact h2
     have : a :: tail = L'' := MAX L'' chainL'' ⟨htL''1, htL''2⟩ sublistL''
     exact (List.cons_eq_cons.1 this).2
+
 
 lemma maximal_chain'_cons {a b : P} {L : List P} : maximal_chain' (b :: L) → a ⋖ b → maximal_chain' (a :: b :: L) := by sorry
 
