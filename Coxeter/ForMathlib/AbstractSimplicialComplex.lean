@@ -10,23 +10,10 @@ An abstract simplicial complex is a pair (V,F) where V is a set and F is a set o
 @[ext]
 structure AbstractSimplicialComplex (V : Type*)  where
   faces : Set (Finset V)
-  /- the set of faces which are Finsets of type V. -/
+  /- The set of faces which are Finsets of type V. -/
   empty_mem : ∅ ∈ faces
-  lower' : IsLowerSet faces--The set of faces is a lower set under the inclusion relation.
-
-theorem AbstractSimplicialComplex.nonempty {V : Type*} {F : AbstractSimplicialComplex V} : F.faces.Nonempty := Set.nonempty_of_mem F.empty_mem
-
-theorem isLowerSet_singleton_empty (α : Type*):
-IsLowerSet {(∅ : Set α)} := by
-  intro _ _ blea ain
-  rw [ain, ← Set.bot_eq_empty, ← eq_bot_iff, Set.bot_eq_empty] at blea
-  rw [blea]; rfl
-
-theorem Finset.isLowerSet_singleton_empty (α : Type*):
-IsLowerSet {(∅ : Finset α)} := by
-  intro _ _ blea ain
-  rw [ain, ← Finset.bot_eq_empty, ← eq_bot_iff, Finset.bot_eq_empty] at blea
-  rw [blea]; rfl
+  lower' : IsLowerSet faces
+  /- The set of faces is a lower set under the inclusion relation.-/
 
 theorem AbstractSimplicialComplex.nonempty {V : Type*} {F : AbstractSimplicialComplex V} : F.faces.Nonempty := Set.nonempty_of_mem F.empty_mem
 
@@ -51,7 +38,7 @@ variable {V : Type*}
 lemma subset_mem (F : AbstractSimplicialComplex V) : ∀ {s t}, s ∈ F.faces →  t ⊆ s → t ∈ F.faces
   := fun hs hst => F.lower' hst hs
 
-/- equip F∈ AbstractSimplicialComplex V with a structure of Finset using the function F↦ F.faces-/
+/-- equip F∈ AbstractSimplicialComplex V with a structure of Finset using the function F↦ F.faces-/
 instance : SetLike (AbstractSimplicialComplex V) (Finset V) where
   coe F := F.faces
   coe_injective' p q h := by
@@ -66,7 +53,7 @@ theorem mem_faces {F : AbstractSimplicialComplex V} {x : Finset V} : x ∈ F.fac
 @[simp]
 def le (G F : AbstractSimplicialComplex V) := G.faces ⊆ F.faces
 
-/-
+/--
 The set of all ASCs over V admits a partial ordering by inclusion of the set of faces. We denote this relation by G ≤ F.
 -/
 instance partialOrder : PartialOrder (AbstractSimplicialComplex V) where
